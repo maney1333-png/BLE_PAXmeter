@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#3F51B5"
+            app:title="CLB Sniffer"
+            app:titleTextColor="#FFFFFF"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:id="@+id/layout_setup"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fahrt-Konfiguration"
+                android:textColor="#3F51B5"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginBottom="10dp"/>
+
+            <Button
+                android:id="@+id/btnFindStop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📍 Haltestelle suchen (GPS)"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="10dp"/>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TableRow android:layout_marginBottom="5dp">
+                    <TextView android:text="Linie:" android:textColor="#FFFFFF" android:textSize="16sp" android:layout_gravity="center_vertical" android:paddingEnd="10dp"/>
+                    <EditText android:id="@+id/lineET" android:hint="z.B. 62" android:textColor="#FFFFFF" android:inputType="text" android:layout_weight="1"/>
+                </TableRow>
+                <TableRow android:layout_marginBottom="5dp">
+                    <TextView android:text="Halt:" android:textColor="#FFFFFF" android:textSize="16sp" android:layout_gravity="center_vertical" android:paddingEnd="10dp"/>
+                    <EditText android:id="@+id/stopET" android:hint="Suche läuft..." android:textColor="#FFFFFF" android:inputType="text" android:layout_weight="1"/>
+                </TableRow>
+                <TableRow android:layout_marginBottom="5dp">
+                    <TextView android:text="Richtung:" android:textColor="#FFFFFF" android:textSize="16sp" android:layout_gravity="center_vertical" android:paddingEnd="10dp"/>
+                    <EditText android:id="@+id/directionET" android:hint="Endstation" android:textColor="#FFFFFF" android:inputType="text" android:layout_weight="1"/>
+                </TableRow>
+                <TableRow android:layout_marginBottom="5dp">
+                    <TextView android:text="Fahrzeug:" android:textColor="#FFFFFF" android:textSize="16sp" android:layout_gravity="center_vertical" android:paddingEnd="10dp"/>
+                    <EditText android:id="@+id/idET" android:hint="Wagennummer" android:textColor="#FFFFFF" android:inputType="text" android:layout_weight="1"/>
+                </TableRow>
+            </TableLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#444" android:layout_marginVertical="15dp"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Filter Presets" android:textColor="#FFFFFF" android:textStyle="bold" android:layout_marginBottom="5dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3">
+                <Button android:id="@+id/btnBus" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="BUS" android:layout_margin="2dp" style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                <Button android:id="@+id/btnBahn" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="BAHN" android:layout_margin="2dp" style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                <Button android:id="@+id/btnZug" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="ZUG" android:layout_margin="2dp" style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+            </LinearLayout>
+
+            <CheckBox android:id="@+id/cbUseSpeed" android:layout_width="wrap_content" android:textColor="#FFFFFF" android:layout_height="wrap_content" android:text="Speed-Trigger (km/h)"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <SeekBar android:id="@+id/sbSpeed" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="155" android:progress="15"/>
+                <TextView android:id="@+id/lblSpeedValue" android:layout_width="40dp" android:layout_height="wrap_content" android:text="20" android:textColor="#FFFFFF" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <CheckBox android:id="@+id/cbUseDuration" android:layout_width="wrap_content" android:textColor="#FFFFFF" android:layout_height="wrap_content" android:text="Messdauer (sek)"/>
+            <SeekBar android:id="@+id/sbDuration" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="170" android:progress="20"/>
+            <TextView android:id="@+id/lblDurationValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="30" android:textColor="#FFFFFF" android:gravity="end" android:paddingEnd="10dp"/>
+
+            <CheckBox android:id="@+id/cbUseRSSI" android:layout_width="wrap_content" android:textColor="#FFFFFF" android:layout_height="wrap_content" android:text="RSSI Limit (dBm)"/>
+            <SeekBar android:id="@+id/sbRSSI" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="60" android:progress="15"/>
+            <TextView android:id="@+id/lblRSSIValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="-85" android:textColor="#FFFFFF" android:gravity="end" android:paddingEnd="10dp"/>
+
+            <CheckBox android:id="@+id/cbUsePings" android:layout_width="wrap_content" android:textColor="#FFFFFF" android:layout_height="wrap_content" android:text="Min. Pings"/>
+            <SeekBar android:id="@+id/sbPings" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="49" android:progress="14"/>
+            <TextView android:id="@+id/lblPingsValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="15" android:textColor="#FFFFFF" android:gravity="end" android:paddingEnd="10dp"/>
+
+            <EditText android:id="@+id/commentET" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:hint="Freitext Bemerkung..." android:layout_marginTop="10dp"/>
+
+            <Button
+                android:id="@+id/startMeasurementBT"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="20dp"
+                android:text="MESSUNG STARTEN"
+                android:textSize="18sp"
+                android:backgroundTint="#3F51B5"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/layout_live"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appbar">
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="2"
+            android:alignmentMode="alignMargins"
+            android:columnOrderPreserved="false"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:id="@+id/tvStatusGPS"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:background="#22FFFFFF"
+                android:gravity="center"
+                android:padding="8dp"
+                android:layout_margin="2dp"
+                android:text="GPS: --"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvStatusMessung"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:background="#22FFFFFF"
+                android:gravity="center"
+                android:padding="8dp"
+                android:layout_margin="2dp"
+                android:text="Messung: AUS"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvStatusInternet"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:background="#22FFFFFF"
+                android:gravity="center"
+                android:padding="8dp"
+                android:layout_margin="2dp"
+                android:text="Net: --"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvStatusSpeed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:background="#22FFFFFF"
+                android:gravity="center"
+                android:padding="8dp"
+                android:layout_margin="2dp"
+                android:text="0.0 km/h"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+        </GridLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="#113F51B5"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="BRUTTO" android:textColor="#AAA" android:textSize="10sp"/>
+                <TextView android:id="@+id/nGerateET" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#FFFFFF" android:textSize="24sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="NETTO (Gefiltert)" android:textColor="#4CAF50" android:textSize="12sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/nFilteredET" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#4CAF50" android:textSize="48sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PROGNOSE" android:textColor="#007FFF" android:textSize="10sp"/>
+                <TextView android:id="@+id/lblPrognose" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#007FFF" android:textSize="24sp" android:textStyle="bold"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Aktuelle Fahrgäste im Wagen:" android:textColor="#FFFFFF" android:textSize="14sp" android:layout_gravity="center_horizontal"/>
+        <EditText
+            android:id="@+id/nFahrgasteET"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:hint="0"
+            android:inputType="number"
+            android:textColor="#000000"
+            android:textSize="36sp"
+            android:gravity="center"
+            android:background="#FFF9C4"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginVertical="8dp"/>
+
+        <Button
+            android:id="@+id/ArrivedAtStopBT"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:text="CUT (Halt: 0)"
+            android:textSize="20sp"
+            android:backgroundTint="#2E7D32"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/stopMeasurementBT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MESSUNG BEENDEN"
+            android:backgroundTint="#B71C1C"
+            android:layout_marginBottom="5dp"/>
+
+        <TextView android:id="@+id/exceptionTV" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FF0000" android:gravity="center" android:textSize="12sp"/>
+
+        <EditText android:id="@+id/nHstET" android:layout_width="1dp" android:layout_height="1dp" android:visibility="gone" android:text="0"/>
+        <TextView android:id="@+id/statusTV" android:layout_width="1dp" android:layout_height="1dp" android:visibility="gone" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
