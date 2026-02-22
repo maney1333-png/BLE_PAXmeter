@@ -105,6 +105,59 @@
             <SeekBar android:id="@+id/sbPings" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="49" android:progress="14"/>
             <TextView android:id="@+id/lblPingsValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="15" android:textColor="#FFFFFF" android:gravity="end" android:paddingEnd="10dp"/>
 
+            <CheckBox
+                android:id="@+id/cbVisibilityTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Min. Signalsichtbarkeit filtern"
+                android:textColor="#FFFFFF"
+                android:checked="true"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <SeekBar
+                    android:id="@+id/sbVisibilityTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="55" />
+                <TextView
+                    android:id="@+id/lblVisibilityTimeValue"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="10 s"
+                    android:textColor="#FFFFFF"
+                    android:textAlignment="viewEnd"/>
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/cbSpeedDiff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Geschwindigkeitsdifferenz filtern"
+                android:textColor="#FFFFFF"
+                android:checked="false"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <SeekBar
+                    android:id="@+id/sbSpeedDiff"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="18" />
+                <TextView
+                    android:id="@+id/lblSpeedDiffValue"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:text="5 km/h"
+                    android:textColor="#FFFFFF"
+                    android:textAlignment="viewEnd"/>
+            </LinearLayout>
 
             <Button
                 android:id="@+id/startMeasurementBT"
@@ -135,58 +188,10 @@
             android:alignmentMode="alignMargins"
             android:columnOrderPreserved="false"
             android:layout_marginBottom="10dp">
-
-            <TextView
-                android:id="@+id/tvStatusGPS"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="#22FFFFFF"
-                android:gravity="center"
-                android:padding="8dp"
-                android:layout_margin="2dp"
-                android:text="GPS: --"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvStatusMessung"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="#22FFFFFF"
-                android:gravity="center"
-                android:padding="8dp"
-                android:layout_margin="2dp"
-                android:text="Messung: AUS"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvStatusInternet"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="#22FFFFFF"
-                android:gravity="center"
-                android:padding="8dp"
-                android:layout_margin="2dp"
-                android:text="Net: --"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvStatusSpeed"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="#22FFFFFF"
-                android:gravity="center"
-                android:padding="8dp"
-                android:layout_margin="2dp"
-                android:text="0.0 km/h"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
+            <TextView android:id="@+id/tvStatusGPS" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:background="#22FFFFFF" android:gravity="center" android:padding="8dp" android:layout_margin="2dp" android:text="GPS: --" android:textColor="#FFFFFF" android:textStyle="bold" />
+            <TextView android:id="@+id/tvStatusMessung" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:background="#22FFFFFF" android:gravity="center" android:padding="8dp" android:layout_margin="2dp" android:text="Messung: AUS" android:textColor="#FFFFFF" android:textStyle="bold" />
+            <TextView android:id="@+id/tvStatusInternet" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:background="#22FFFFFF" android:gravity="center" android:padding="8dp" android:layout_margin="2dp" android:text="Net: --" android:textColor="#FFFFFF" android:textStyle="bold" />
+            <TextView android:id="@+id/tvStatusSpeed" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:background="#22FFFFFF" android:gravity="center" android:padding="8dp" android:layout_margin="2dp" android:text="0.0 km/h" android:textColor="#FFFFFF" android:textStyle="bold" />
         </GridLayout>
 
         <LinearLayout
@@ -197,136 +202,42 @@
             android:background="#113F51B5"
             android:padding="10dp"
             android:layout_marginBottom="10dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="BRUTTO" android:textColor="#AAA" android:textSize="10sp"/>
                 <TextView android:id="@+id/nGerateET" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#FFFFFF" android:textSize="24sp" android:textStyle="bold"/>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.5"
-                android:gravity="center"
-                android:orientation="vertical">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.5" android:gravity="center" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="NETTO (Gefiltert)" android:textColor="#4CAF50" android:textSize="12sp" android:textStyle="bold"/>
                 <TextView android:id="@+id/nFilteredET" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#4CAF50" android:textSize="48sp" android:textStyle="bold"/>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PROGNOSE" android:textColor="#007FFF" android:textSize="10sp"/>
                 <TextView android:id="@+id/lblPrognose" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#007FFF" android:textSize="24sp" android:textStyle="bold"/>
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fahrgast-Management (Halt):"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginVertical="10dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fahrgast-Management (Halt):" android:textColor="#FFFFFF" android:textSize="14sp" android:layout_gravity="center_horizontal" android:layout_marginTop="10dp"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:layout_marginVertical="10dp">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="AUS" android:textColor="#FFCDD2" android:textSize="12sp"/>
-                <EditText
-                    android:id="@+id/etOut"
-                    android:layout_width="80dp"
-                    android:layout_height="60dp"
-                    android:hint="-"
-                    android:inputType="number"
-                    android:textColor="#FFFFFF"
-                    android:textSize="24sp"
-                    android:gravity="center"
-                    android:background="#44B71C1C"/>
+                <EditText android:id="@+id/etOut" android:layout_width="80dp" android:layout_height="60dp" android:hint="-" android:inputType="number" android:textColor="#FFFFFF" android:textSize="24sp" android:gravity="center" android:background="#44B71C1C"/>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.2"
-                android:orientation="vertical"
-                android:gravity="center">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.2" android:orientation="vertical" android:gravity="center">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GESAMT" android:textColor="#FFF9C4" android:textSize="12sp"/>
-                <EditText
-                    android:id="@+id/nFahrgasteET"
-                    android:layout_width="100dp"
-                    android:layout_height="70dp"
-                    android:hint="0"
-                    android:inputType="number"
-                    android:textColor="#000000"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:background="#FFF9C4"/>
+                <EditText android:id="@+id/nFahrgasteET" android:layout_width="100dp" android:layout_height="70dp" android:hint="0" android:inputType="number" android:textColor="#000000" android:textSize="32sp" android:textStyle="bold" android:gravity="center" android:background="#FFF9C4"/>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ZU" android:textColor="#C8E6C9" android:textSize="12sp"/>
-                <EditText
-                    android:id="@+id/etIn"
-                    android:layout_width="80dp"
-                    android:layout_height="60dp"
-                    android:hint="+"
-                    android:inputType="number"
-                    android:textColor="#FFFFFF"
-                    android:textSize="24sp"
-                    android:gravity="center"
-                    android:background="#442E7D32"/>
+                <EditText android:id="@+id/etIn" android:layout_width="80dp" android:layout_height="60dp" android:hint="+" android:inputType="number" android:textColor="#FFFFFF" android:textSize="24sp" android:gravity="center" android:background="#442E7D32"/>
             </LinearLayout>
         </LinearLayout>
-        <Button
-            android:id="@+id/ArrivedAtStopBT"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="CUT (Halt: 0)"
-            android:textSize="20sp"
-            android:backgroundTint="#2E7D32"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
-
-        <Button
-            android:id="@+id/stopMeasurementBT"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="MESSUNG BEENDEN"
-            android:backgroundTint="#B71C1C"
-            android:layout_marginBottom="5dp"/>
-
+        <Button android:id="@+id/ArrivedAtStopBT" android:layout_width="match_parent" android:layout_height="80dp" android:text="CUT (Halt: 0)" android:textSize="20sp" android:backgroundTint="#2E7D32" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+        <Button android:id="@+id/stopMeasurementBT" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="MESSUNG BEENDEN" android:backgroundTint="#B71C1C" android:layout_marginBottom="5dp"/>
         <TextView android:id="@+id/exceptionTV" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FF0000" android:gravity="center" android:textSize="12sp"/>
-
         <EditText android:id="@+id/nHstET" android:layout_width="1dp" android:layout_height="1dp" android:visibility="gone" android:text="0"/>
         <TextView android:id="@+id/statusTV" android:layout_width="1dp" android:layout_height="1dp" android:visibility="gone" />
-
     </LinearLayout>
+
     <EditText
         android:id="@+id/commentET"
         android:layout_width="match_parent"

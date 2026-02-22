@@ -73,12 +73,14 @@ public class MainActivity extends AppCompatActivity {
     private int rssiThreshold = -85;
     private int minPingsRequired = 2;
     private int sectionCount = 0;
+    private int visibilityTimeThreshold = 10;
+    private int speedDiffThreshold = 5;
 
     // UI Elemente
     private View layoutSetup, layoutLive;
-    private CheckBox cbUseSpeed, cbUseRSSI, cbUsePings, cbUseDuration;
-    private SeekBar sbSpeed, sbRSSI, sbPings, sbDuration;
-    private TextView lblSpeedValue, lblDurationValue, lblRSSIValue, lblPingsValue, lblPrognose;
+    private CheckBox cbUseSpeed, cbUseRSSI, cbUsePings, cbUseDuration, cbVisibilityTime, cbSpeedDiff;
+    private SeekBar sbSpeed, sbRSSI, sbPings, sbDuration, sbVisibilityTime, sbSpeedDiff;
+    private TextView lblSpeedValue, lblDurationValue, lblRSSIValue, lblPingsValue, lblPrognose, lblVisibilityTimeValue, lblSpeedDiffValue;
     private Button startBT, haltestelleBT, stopBT, btnBus, btnBahn, btnZug, btnFindStop;
     private EditText lineET, stopET, directionET, commentET, idET, nFahrgaste;
     private EditText etIn, etOut; // NEU
@@ -233,6 +235,13 @@ public class MainActivity extends AppCompatActivity {
         directionET = findViewById(R.id.directionET);
         idET = findViewById(R.id.idET);
         commentET = findViewById(R.id.commentET);
+        cbVisibilityTime = findViewById(R.id.cbVisibilityTime);
+        sbVisibilityTime = findViewById(R.id.sbVisibilityTime);
+        lblVisibilityTimeValue = findViewById(R.id.lblVisibilityTimeValue);
+
+        cbSpeedDiff = findViewById(R.id.cbSpeedDiff);
+        sbSpeedDiff = findViewById(R.id.sbSpeedDiff);
+        lblSpeedDiffValue = findViewById(R.id.lblSpeedDiffValue);
 
         startBT.setOnClickListener(v -> Start());
         haltestelleBT.setOnClickListener(v -> Haltestelle());
@@ -542,7 +551,47 @@ public class MainActivity extends AppCompatActivity {
             tvStatusMessung.setText("CUT BEREIT");
         });
     }
+    private boolean isDeviceValid(RSSIStats stats, float overallAverageSpeed) {
+        // 1. Alte Filter prüfen
+        if (cbUseRSSI.isChecked() && stats.getAverage() < rssiThreshold) return false;
+        if (cbUsePings.isChecked() && stats.count < minPingsRequired) return false;
 
+        // 2. Neuer Filter: Signalsichtbarkeit
+        if (cbVisibilityTime != null && cbVisibilityTime.isChecked()) {
+            if (stats.getDurationSec() < visibilityTimeThreshold) return false;
+        }
+
+        // 3. Neuer Filter: Geschwindigkeitsdifferenz
+        if (cbSpeedDiff != null && cbSpeedDiff.isChecked()) {
+            float deviceSpeed = stats.getAverageSpeed();
+            // Fällt die Gerätegeschwindigkeit unter den Toleranzbereich der Durchschnittsgeschwindigkeit?
+            if (deviceSpeed < (overallAverageSpeed - speedDiffThreshold)) return false;
+        }
+
+        // Hat alle aktivierten Filter überstanden
+        return true;
+    }
+    private void updateLiveStats() {
+        int net = 0;
+        int brutto = bluetoothData.size();
+
+        // Durchschnittsgeschwindigkeit berechnen (für den neuen Filter)
+        float overallAverageSpeed = sectionSpeedCount > 0 ? (float) (sectionSpeedSum / sectionSpeedCount) : currentSpeedKMH;
+
+        for (RSSIStats s : bluetoothData.values()) {
+            // Hier greift unsere neue Filter-Methode
+            if (isDeviceValid(s, overallAverageSpeed)) {
+                net++;
+            }
+        }
+
+        final int fN = net, fB = brutto;
+        runOnUiThread(() -> {
+            nGerate.setText(String.valueOf(fB));
+            nFilteredET.setText(String.valueOf(fN));
+            lblPrognose.setText(String.valueOf((int)(fN * 1.25)));
+        });
+    }
     private void Haltestelle() {
         try {
             // 1. Werte holen
@@ -569,7 +618,10 @@ public class MainActivity extends AppCompatActivity {
             s.put("Brutto_BT", bluetoothData.size());
             s.put("Netto_BT", nFilteredET.getText().toString());
             s.put("Fahrgaeste_Manuell", finalCount);
+
+            // Durchschnittsgeschwindigkeit berechnen (wird auch für den Filter genutzt)
             double fahrzeugVAvg = (sectionSpeedCount > 0) ? (sectionSpeedSum / sectionSpeedCount) : 0;
+
             s.put("Fahrzeug_V_Avg", String.format(Locale.US, "%.1f", fahrzeugVAvg));
             s.put("Fahrzeug_V_Max", String.format(Locale.US, "%.1f", sectionMaxSpeed));
 
@@ -581,9 +633,8 @@ public class MainActivity extends AppCompatActivity {
             for (String mac : bluetoothData.keySet()) {
                 RSSIStats stats = bluetoothData.get(mac);
 
-                // Filter anwenden (nur valide Geräte ins Protokoll)
-                if ((!cbUseRSSI.isChecked() || stats.getAverage() >= rssiThreshold) &&
-                        (!cbUsePings.isChecked() || stats.count >= minPingsRequired)) {
+                // NEU: Hier nutzen wir unsere zentrale Filter-Methode!
+                if (isDeviceValid(stats, (float) fahrzeugVAvg)) {
 
                     JSONObject d = new JSONObject();
                     d.put("mac", mac);
@@ -695,20 +746,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
-    private void updateLiveStats() {
-        int net = 0;
-        int brutto = bluetoothData.size();
-        for (RSSIStats s : bluetoothData.values()) {
-            if ((!cbUseRSSI.isChecked() || s.getAverage() >= rssiThreshold) &&
-                    (!cbUsePings.isChecked() || s.count >= minPingsRequired)) net++;
-        }
-        final int fN = net, fB = brutto;
-        runOnUiThread(() -> {
-            nGerate.setText(String.valueOf(fB));
-            nFilteredET.setText(String.valueOf(fN));
-            lblPrognose.setText(String.valueOf((int)(fN * 1.25)));
-        });
-    }
+
 
     private void findeBL() {
         BluetoothManager bm = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
@@ -780,23 +818,54 @@ public class MainActivity extends AppCompatActivity {
     private void setupFilters() {
         cbUseSpeed = findViewById(R.id.cbUseSpeed); cbUseRSSI = findViewById(R.id.cbUseRSSI);
         cbUsePings = findViewById(R.id.cbUsePings); cbUseDuration = findViewById(R.id.cbUseDuration);
+        cbVisibilityTime = findViewById(R.id.cbVisibilityTime); // NEU
+        cbSpeedDiff = findViewById(R.id.cbSpeedDiff);           // NEU
+
         sbSpeed = findViewById(R.id.sbSpeed); sbRSSI = findViewById(R.id.sbRSSI);
         sbPings = findViewById(R.id.sbPings); sbDuration = findViewById(R.id.sbDuration);
+        sbVisibilityTime = findViewById(R.id.sbVisibilityTime); // NEU
+        sbSpeedDiff = findViewById(R.id.sbSpeedDiff);           // NEU
+
         lblSpeedValue = findViewById(R.id.lblSpeedValue); lblDurationValue = findViewById(R.id.lblDurationValue);
         lblRSSIValue = findViewById(R.id.lblRSSIValue); lblPingsValue = findViewById(R.id.lblPingsValue);
+        lblVisibilityTimeValue = findViewById(R.id.lblVisibilityTimeValue); // NEU
+        lblSpeedDiffValue = findViewById(R.id.lblSpeedDiffValue);           // NEU
+
         sbDuration.setProgress(5); // Ergibt 15s (5 + 10 Offset)
         sbSpeed.setProgress(20);
         sbPings.setProgress(1);    // Ergibt 2 Pings (1 + 1 Offset)
+        sbVisibilityTime.setProgress(5); // NEU: Ergibt 10s (5 + 5 Offset)
+        sbSpeedDiff.setProgress(3);      // NEU: Ergibt 5 km/h (3 + 2 Offset)
+
         setupSlider(sbSpeed, lblSpeedValue, 5, " km/h", v -> speedThresholdMS = v / 3.6f);
         setupSlider(sbDuration, lblDurationValue, 10, " s", v -> currentWindowDuration = v * 1000L);
         setupSlider(sbRSSI, lblRSSIValue, -100, " dBm", v -> rssiThreshold = v - 100);
         setupSlider(sbPings, lblPingsValue, 1, "", v -> minPingsRequired = v);
+        setupSlider(sbVisibilityTime, lblVisibilityTimeValue, 5, " s", v -> visibilityTimeThreshold = v);
+        setupSlider(sbSpeedDiff, lblSpeedDiffValue, 2, " km/h", v -> speedDiffThreshold = v);
+
         cbUseSpeed.setChecked(true);
         cbUsePings.setChecked(true);
         cbUseDuration.setChecked(true);
+        cbUseRSSI.setChecked(false);        // RSSI beim Start AUS (wie von dir beobachtet)
+        cbVisibilityTime.setChecked(true);  // Sichtbarkeit beim Start AN
+        cbSpeedDiff.setChecked(false);     // NEU: Standardmäßig aus
+
+        // Aktivierung der Slider initial setzen
         sbSpeed.setEnabled(cbUseSpeed.isChecked());
         sbPings.setEnabled(cbUsePings.isChecked());
         sbDuration.setEnabled(cbUseDuration.isChecked());
+        sbRSSI.setEnabled(cbUseRSSI.isChecked());
+        sbVisibilityTime.setEnabled(cbVisibilityTime.isChecked());
+        sbSpeedDiff.setEnabled(cbSpeedDiff.isChecked());
+
+        // NEU: Listener hinzufügen, damit die Slider beim Klicken auf die Checkbox reagieren
+        cbUseSpeed.setOnClickListener(v -> sbSpeed.setEnabled(cbUseSpeed.isChecked()));
+        cbUsePings.setOnClickListener(v -> sbPings.setEnabled(cbUsePings.isChecked()));
+        cbUseDuration.setOnClickListener(v -> sbDuration.setEnabled(cbUseDuration.isChecked()));
+        cbUseRSSI.setOnClickListener(v -> sbRSSI.setEnabled(cbUseRSSI.isChecked()));
+        cbVisibilityTime.setOnClickListener(v -> sbVisibilityTime.setEnabled(cbVisibilityTime.isChecked()));
+        cbSpeedDiff.setOnClickListener(v -> sbSpeedDiff.setEnabled(cbSpeedDiff.isChecked()));
     }
 
     private void setupSlider(SeekBar sb, TextView lbl, int offset, String unit, OnValueChange listener) {
