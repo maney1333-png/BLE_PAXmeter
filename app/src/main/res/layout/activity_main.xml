@@ -105,7 +105,6 @@
             <SeekBar android:id="@+id/sbPings" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="49" android:progress="14"/>
             <TextView android:id="@+id/lblPingsValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="15" android:textColor="#FFFFFF" android:gravity="end" android:paddingEnd="10dp"/>
 
-            <EditText android:id="@+id/commentET" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:hint="Freitext Bemerkung..." android:layout_marginTop="10dp"/>
 
             <Button
                 android:id="@+id/startMeasurementBT"
@@ -230,20 +229,80 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Aktuelle Fahrgäste im Wagen:" android:textColor="#FFFFFF" android:textSize="14sp" android:layout_gravity="center_horizontal"/>
-        <EditText
-            android:id="@+id/nFahrgasteET"
-            android:layout_width="150dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="0"
-            android:inputType="number"
-            android:textColor="#000000"
-            android:textSize="36sp"
-            android:gravity="center"
-            android:background="#FFF9C4"
+            android:text="Fahrgast-Management (Halt):"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginVertical="8dp"/>
+            android:layout_marginTop="10dp"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginVertical="10dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="AUS" android:textColor="#FFCDD2" android:textSize="12sp"/>
+                <EditText
+                    android:id="@+id/etOut"
+                    android:layout_width="80dp"
+                    android:layout_height="60dp"
+                    android:hint="-"
+                    android:inputType="number"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:gravity="center"
+                    android:background="#44B71C1C"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.2"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GESAMT" android:textColor="#FFF9C4" android:textSize="12sp"/>
+                <EditText
+                    android:id="@+id/nFahrgasteET"
+                    android:layout_width="100dp"
+                    android:layout_height="70dp"
+                    android:hint="0"
+                    android:inputType="number"
+                    android:textColor="#000000"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="#FFF9C4"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ZU" android:textColor="#C8E6C9" android:textSize="12sp"/>
+                <EditText
+                    android:id="@+id/etIn"
+                    android:layout_width="80dp"
+                    android:layout_height="60dp"
+                    android:hint="+"
+                    android:inputType="number"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:gravity="center"
+                    android:background="#442E7D32"/>
+            </LinearLayout>
+        </LinearLayout>
         <Button
             android:id="@+id/ArrivedAtStopBT"
             android:layout_width="match_parent"
@@ -268,4 +327,10 @@
         <TextView android:id="@+id/statusTV" android:layout_width="1dp" android:layout_height="1dp" android:visibility="gone" />
 
     </LinearLayout>
+    <EditText
+        android:id="@+id/commentET"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Bemerkungen"
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,11 +19,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView lblSpeedValue, lblDurationValue, lblRSSIValue, lblPingsValue, lblPrognose;
     private Button startBT, haltestelleBT, stopBT, btnBus, btnBahn, btnZug, btnFindStop;
     private EditText lineET, stopET, directionET, commentET, idET, nFahrgaste;
+    private EditText etIn, etOut; // NEU
     private TextView nGerate, nFilteredET, exception;
     private TextView tvStatusGPS, tvStatusMessung, tvStatusInternet, tvStatusSpeed;
 
@@ -105,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     private double sectionSpeedSum = 0;
     private int sectionSpeedCount = 0;
     private float sectionMaxSpeed = 0;
+    private int lastPassengerCount = 0;
 
     private final OkHttpClient httpClient = new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -215,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
         btnZug = findViewById(R.id.btnZug);
         lblPrognose = findViewById(R.id.lblPrognose);
         nFahrgaste = findViewById(R.id.nFahrgasteET);
+        etIn = findViewById(R.id.etIn);   // NEU
+        etOut = findViewById(R.id.etOut);
         nGerate = findViewById(R.id.nGerateET);
         nFilteredET = findViewById(R.id.nFilteredET);
         exception = findViewById(R.id.exceptionTV);
@@ -470,7 +476,7 @@ public class MainActivity extends AppCompatActivity {
             fileText.put("VVO_Start_Verspaetung", currentDelay);
 
             // Kommentarfeld mitnehmen
-            fileText.put("Kommentar", commentET.getText().toString());
+            fileText.put("Kommentar", "");
 
         } catch (Exception ignored) {
             Log.e("JSON_START", "Fehler beim Erstellen des Headers");
@@ -478,12 +484,13 @@ public class MainActivity extends AppCompatActivity {
         findeBL();
         startStatusMonitor();
         startNewSegmentLogic();
+        String initialPax = nFahrgaste.getText().toString();
+        lastPassengerCount = initialPax.isEmpty() ? 0 : Integer.parseInt(initialPax);
     }
 
     private void startNewSegmentLogic() {
         wasTriggeredInThisSegment = false;
         haltestelleBT.setText("CUT (Halt: " + sectionCount + ")");
-        nFahrgaste.setText("");
         nFahrgaste.postDelayed(() -> {
             nFahrgaste.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -538,13 +545,30 @@ public class MainActivity extends AppCompatActivity {
 
     private void Haltestelle() {
         try {
+            // 1. Werte holen
+            int inVal = getIntFromEdit(etIn);
+            int outVal = getIntFromEdit(etOut);
+            String currentText = nFahrgaste.getText().toString();
+            int currentInput = currentText.isEmpty() ? 0 : Integer.parseInt(currentText);
+
+            // 2. Logik: Hat der User manuell etwas anderes eingetippt als den alten Stand?
+            int finalCount;
+            if (currentInput != lastPassengerCount) {
+                finalCount = currentInput; // Manuelle Korrektur
+            } else {
+                finalCount = lastPassengerCount - outVal + inVal; // Automatische Rechnung
+            }
+            if (finalCount < 0) finalCount = 0;
+
+            // 3. WICHTIG: Den neuen Wert für den nächsten Halt merken
+            lastPassengerCount = finalCount;
             JSONObject s = new JSONObject();
             s.put("Halt_Nr", sectionCount);
             s.put("Haltestelle", currentStopName);
             s.put("Zeit", startzeit);
             s.put("Brutto_BT", bluetoothData.size());
             s.put("Netto_BT", nFilteredET.getText().toString());
-            s.put("Fahrgaeste_Manuell", nFahrgaste.getText().toString());
+            s.put("Fahrgaeste_Manuell", finalCount);
             double fahrzeugVAvg = (sectionSpeedCount > 0) ? (sectionSpeedSum / sectionSpeedCount) : 0;
             s.put("Fahrzeug_V_Avg", String.format(Locale.US, "%.1f", fahrzeugVAvg));
             s.put("Fahrzeug_V_Max", String.format(Locale.US, "%.1f", sectionMaxSpeed));
@@ -587,6 +611,12 @@ public class MainActivity extends AppCompatActivity {
             sectionSpeedSum = 0;
             sectionSpeedCount = 0;
             sectionMaxSpeed = 0;
+            lastPassengerCount = finalCount;
+            runOnUiThread(() -> {
+                nFahrgaste.setText(String.valueOf(lastPassengerCount));
+                etIn.setText("");
+                etOut.setText("");
+            });
             if (lastValidLocation != null) {
                 updateNextStopAuto(lastValidLocation.getLatitude(), lastValidLocation.getLongitude());
             }
@@ -597,6 +627,15 @@ public class MainActivity extends AppCompatActivity {
             }, 500);
         } catch (Exception ex) {
             exception.setText("Fehler beim Export");
+        }
+    }
+    private int getIntFromEdit(EditText et) {
+        String s = et.getText().toString();
+        if (s.isEmpty() || s.equals("-") || s.equals("+")) return 0;
+        try {
+            return Integer.parseInt(s);
+        } catch (Exception e) {
+            return 0;
         }
     }
     private void updateNextStopAuto(double lat, double lon) {
@@ -774,11 +813,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void pseudoStop() {
-        new AlertDialog.Builder(this).setTitle("Beenden?").setPositiveButton("Ja", (d, w) -> Stop()).show();
+        // 1. Das Feld sichtbar machen (da es im Layout auf 'gone' steht)
+        commentET.setVisibility(View.VISIBLE);
+        commentET.setHint("Bemerkungen zur Fahrt (optional)...");
+
+        // 2. Ein Container, damit das Textfeld im Dialog nicht am Rand klebt
+        FrameLayout container = new FrameLayout(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = 50; // Padding links
+        params.rightMargin = 50; // Padding rechts
+        commentET.setLayoutParams(params);
+
+        // Falls das Feld noch einen alten Parent hat (vom Layout), lösen wir es kurz
+        if (commentET.getParent() != null) {
+            ((ViewGroup) commentET.getParent()).removeView(commentET);
+        }
+        container.addView(commentET);
+
+        // 3. Der angepasste Dialog
+        new AlertDialog.Builder(this)
+                .setTitle("Messung beenden")
+                .setMessage("Möchten Sie das Protokoll speichern?")
+                .setView(container) // Hier binden wir das Feld ein
+                .setPositiveButton("Ja, Speichern", (d, w) -> {
+                    // Erst jetzt rufen wir Stop() auf, nachdem der User Zeit für Notizen hatte
+                    Stop();
+                })
+                .setNegativeButton("Abbrechen", (d, w) -> {
+                    // Falls abgebrochen wird: Feld wieder verstecken
+                    commentET.setVisibility(View.GONE);
+                })
+                .show();
     }
 
     private void Stop() {
         mode = Mode.Off; windowActive = false;
+        try {
+            // Da fileText in Start() schon erstellt wurde, fügen wir den Text jetzt hinzu
+            // put() überschreibt einen bestehenden Key im JSONObject einfach
+            fileText.put("Kommentar", commentET.getText().toString());
+        } catch (Exception e) {
+            Log.e("STOP", "Fehler beim Aktualisieren des Kommentars");
+        }
         if (locationManager != null) locationManager.removeUpdates(locationListener);
         if (scanner != null && scb != null && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) scanner.stopScan(scb);
         Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
