@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#3F51B5"
-            app:title="CLB Sniffer"
+            app:title="@string/app_name"
             app:titleTextColor="#FFFFFF"/>
     </com.google.android.material.appbar.AppBarLayout>
 

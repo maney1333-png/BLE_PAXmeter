@@ -1,4 +1,4 @@
-package com.example.clb_blutoothsniffer;
+package com.example.BLE_PAXmeter;
 
 import android.content.Context;
 

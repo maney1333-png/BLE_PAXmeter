@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = 'com.example.clb_blutoothsniffer'
+    namespace = 'com.example.BLE_PAXmeter'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.clb_blutoothsniffer"
+        applicationId "com.example.BLE_PAXmeter"
         minSdk 24
         targetSdk 33
         versionCode 1
