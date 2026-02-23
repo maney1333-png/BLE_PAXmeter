@@ -461,6 +461,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Trip geladen: " + currentOperator + " (Trip: " + currentTripId + ")", Toast.LENGTH_SHORT).show();
         });
     }
+    private Object getFilterStatus(CheckBox cb, SeekBar sb, int offset, String unit) {
+        if (!cb.isChecked()) return "Off";
+        return (sb.getProgress() + offset) + unit;
+    }
     private void Start() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) return;
         layoutSetup.setVisibility(View.GONE);
@@ -483,6 +487,13 @@ public class MainActivity extends AppCompatActivity {
             fileText.put("VVO_Fahrzeugtyp", currentVehicleType);
             fileText.put("VVO_Start_Auslastung", currentOccupancy);
             fileText.put("VVO_Start_Verspaetung", currentDelay);
+
+            fileText.put("Filter_RSSI", getFilterStatus(cbUseRSSI, sbRSSI, -100, " dBm"));
+            fileText.put("Filter_Speed", getFilterStatus(cbUseSpeed, sbSpeed, 5, " km/h"));
+            fileText.put("Filter_Pings", getFilterStatus(cbUsePings, sbPings, 1, ""));
+            fileText.put("Filter_Dauer", getFilterStatus(cbUseDuration, sbDuration, 10, " s"));
+            fileText.put("Filter_Sichtbarkeit", getFilterStatus(cbVisibilityTime, sbVisibilityTime, 5, " s"));
+            fileText.put("Filter_SpeedDiff", getFilterStatus(cbSpeedDiff, sbSpeedDiff, 2, " km/h"));
 
             // Kommentarfeld mitnehmen
             fileText.put("Kommentar", "");
@@ -816,18 +827,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupFilters() {
-        cbUseSpeed = findViewById(R.id.cbUseSpeed); cbUseRSSI = findViewById(R.id.cbUseRSSI);
-        cbUsePings = findViewById(R.id.cbUsePings); cbUseDuration = findViewById(R.id.cbUseDuration);
+        cbUseSpeed = findViewById(R.id.cbUseSpeed);
+        cbUseRSSI = findViewById(R.id.cbUseRSSI);
+        cbUsePings = findViewById(R.id.cbUsePings);
+        cbUseDuration = findViewById(R.id.cbUseDuration);
         cbVisibilityTime = findViewById(R.id.cbVisibilityTime); // NEU
         cbSpeedDiff = findViewById(R.id.cbSpeedDiff);           // NEU
 
-        sbSpeed = findViewById(R.id.sbSpeed); sbRSSI = findViewById(R.id.sbRSSI);
-        sbPings = findViewById(R.id.sbPings); sbDuration = findViewById(R.id.sbDuration);
+        sbSpeed = findViewById(R.id.sbSpeed);
+        sbRSSI = findViewById(R.id.sbRSSI);
+        sbPings = findViewById(R.id.sbPings);
+        sbDuration = findViewById(R.id.sbDuration);
         sbVisibilityTime = findViewById(R.id.sbVisibilityTime); // NEU
         sbSpeedDiff = findViewById(R.id.sbSpeedDiff);           // NEU
 
-        lblSpeedValue = findViewById(R.id.lblSpeedValue); lblDurationValue = findViewById(R.id.lblDurationValue);
-        lblRSSIValue = findViewById(R.id.lblRSSIValue); lblPingsValue = findViewById(R.id.lblPingsValue);
+        lblSpeedValue = findViewById(R.id.lblSpeedValue);
+        lblDurationValue = findViewById(R.id.lblDurationValue);
+        lblRSSIValue = findViewById(R.id.lblRSSIValue);
+        lblPingsValue = findViewById(R.id.lblPingsValue);
         lblVisibilityTimeValue = findViewById(R.id.lblVisibilityTimeValue); // NEU
         lblSpeedDiffValue = findViewById(R.id.lblSpeedDiffValue);           // NEU
 
@@ -835,7 +852,8 @@ public class MainActivity extends AppCompatActivity {
         sbSpeed.setProgress(20);
         sbPings.setProgress(1);    // Ergibt 2 Pings (1 + 1 Offset)
         sbVisibilityTime.setProgress(5); // NEU: Ergibt 10s (5 + 5 Offset)
-        sbSpeedDiff.setProgress(3);      // NEU: Ergibt 5 km/h (3 + 2 Offset)
+        sbSpeedDiff.setProgress(3);
+        sbRSSI.setProgress(15);// NEU: Ergibt 5 km/h (3 + 2 Offset)
 
         setupSlider(sbSpeed, lblSpeedValue, 5, " km/h", v -> speedThresholdMS = v / 3.6f);
         setupSlider(sbDuration, lblDurationValue, 10, " s", v -> currentWindowDuration = v * 1000L);
